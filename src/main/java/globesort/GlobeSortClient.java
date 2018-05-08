@@ -25,13 +25,13 @@ public class GlobeSortClient {
     private final ManagedChannel serverChannel;
     private final GlobeSortGrpc.GlobeSortBlockingStub serverStub;
 
-	private static int MAX_MESSAGE_SIZE = 100 * 1024 * 1024;
+    private static int MAX_MESSAGE_SIZE = 100 * 1024 * 1024;
 
     private String serverStr;
 
     public GlobeSortClient(String ip, int port) {
         this.serverChannel = ManagedChannelBuilder.forAddress(ip, port)
-				.maxInboundMessageSize(MAX_MESSAGE_SIZE)
+                .maxInboundMessageSize(MAX_MESSAGE_SIZE)
                 .usePlaintext(true).build();
         this.serverStub = GlobeSortGrpc.newBlockingStub(serverChannel);
 
@@ -40,12 +40,18 @@ public class GlobeSortClient {
 
     public void run(Integer[] values) throws Exception {
         System.out.println("Pinging " + serverStr + "...");
+        long latency_startTime = System.currentTimeMillis();
         serverStub.ping(Empty.newBuilder().build());
+        long latency_endTime = System.currentTimeMillis();
         System.out.println("Ping successful.");
+        System.out.println("Latency is " + (latency_endTime - latency_startTime));
 
         System.out.println("Requesting server to sort array");
+        long total_startTime = System.currentTimeMillis();
         IntArray request = IntArray.newBuilder().addAllValues(Arrays.asList(values)).build();
         IntArray response = serverStub.sortIntegers(request);
+        long total_endTime = System.currentTimeMillis();
+        System.out.println("Total time is " + (total_endTime - total_startTime));
         System.out.println("Sorted array");
     }
 

@@ -91,6 +91,7 @@ public class GlobeSortServer {
             long application_startTime = System.currentTimeMillis();
             Integer[] values = req.getValuesList().toArray(new Integer[req.getValuesList().size()]);
             Arrays.sort(values);
+            System.out.println("Application time is " + (application_endTime - application_startTime));
             IntArray.Builder responseBuilder = IntArray.newBuilder();
             for(Integer val : values) {
                 responseBuilder.addValues(val);
@@ -99,7 +100,7 @@ public class GlobeSortServer {
             responseObserver.onNext(response);
             responseObserver.onCompleted();
             long application_endTime = System.currentTimeMillis();
-            System.out.println("Application time is " + (application_endTime - application_startTime));
+            
         }
     }
 }

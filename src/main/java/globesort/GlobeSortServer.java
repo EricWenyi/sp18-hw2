@@ -20,15 +20,14 @@ public class GlobeSortServer {
     private static int MAX_MESSAGE_SIZE = 100 * 1024 * 1024;
 
     private void start(String ip, int port) throws IOException {
-        long application_startTime = System.currentTimeMillis();
+        
         server = NettyServerBuilder.forAddress(new InetSocketAddress(ip, port))
                     .addService(new GlobeSortImpl())
                     .maxMessageSize(MAX_MESSAGE_SIZE)
                     .executor(Executors.newFixedThreadPool(10))
                     .build()
                     .start();
-        long application_endTime = System.currentTimeMillis();
-        System.out.println("Total time is " + (application_endTime - application_startTime));
+        
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -89,6 +88,7 @@ public class GlobeSortServer {
 
         @Override
         public void sortIntegers(IntArray req, final StreamObserver<IntArray> responseObserver) {
+            long application_startTime = System.currentTimeMillis();
             Integer[] values = req.getValuesList().toArray(new Integer[req.getValuesList().size()]);
             Arrays.sort(values);
             IntArray.Builder responseBuilder = IntArray.newBuilder();
@@ -98,6 +98,8 @@ public class GlobeSortServer {
             IntArray response = responseBuilder.build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
+            long application_endTime = System.currentTimeMillis();
+            System.out.println("Application time is " + (application_endTime - application_startTime));
         }
     }
 }
